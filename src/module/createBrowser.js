@@ -1,35 +1,37 @@
-const { connect } = require("puppeteer-real-browser")
+const { connect } = require("puppeteer-real-browser");
+
+let retries = 0;
+const MAX_RETRIES = 5;
+
 async function createBrowser() {
-    try {
-        if (global.finished == true) return
+  try {
+    if (global.finished === true) return;
 
-        global.browser = null
+    global.browser = null;
 
-        // console.log('Launching the browser...');
+    const { browser } = await connect({
+      headless: "false",
+      turnstile: true,
+      connectOption: { defaultViewport: null },
+      disableXvfb: false,
+    });
 
-        const { browser } = await connect({
-            headless: false,
-            turnstile: true,
-            connectOption: { defaultViewport: null },
-            disableXvfb: false,
-        })
+    global.browser = browser;
+    retries = 0;
 
-        // console.log('Browser launched');
-
-        global.browser = browser;
-
-        browser.on('disconnected', async () => {
-            if (global.finished == true) return
-            console.log('Browser disconnected');
-            await new Promise(resolve => setTimeout(resolve, 6000));
-            await createBrowser();
-        })
-
-    } catch (e) {
-        console.log(e.message);
-        if (global.finished == true) return
-        await new Promise(resolve => setTimeout(resolve, 6000));
-        await createBrowser();
-    }
+    browser.on("disconnected", async () => {
+      if (global.finished === true) return;
+      console.log("Browser disconnected");
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      createBrowser();
+    });
+  } catch (e) {
+    console.error(e.message);
+    if (global.finished === true || retries >= MAX_RETRIES) return;
+    retries++;
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    createBrowser();
+  }
 }
-createBrowser()
+
+createBrowser();
