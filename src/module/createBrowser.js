@@ -56,14 +56,14 @@ async function createBrowser() {
         browser.on('disconnected', async () => {
             if (global.finished == true) return
             console.log('Browser disconnected');
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 6000));
             await createBrowser();
         })
 
     } catch (e) {
         console.log(e.message);
         if (global.finished == true) return
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 6000));
         await createBrowser();
     }
 }
