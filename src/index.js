@@ -3,7 +3,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const rateLimit = require("express-rate-limit");
 const reqValidate = require("./module/reqValidate");
 
 const getSource = require("./endpoints/getSource");
@@ -19,14 +18,6 @@ global.timeOut = Number(process.env.timeOut || 60000);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: { code: 429, message: "Too many requests, try again later." },
-  })
-);
 
 if (process.env.NODE_ENV !== "development") {
   const server = app.listen(port, () => {
