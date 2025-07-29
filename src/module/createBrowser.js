@@ -9,6 +9,7 @@ async function createBrowser() {
 
         const { browser } = await connect({
             headless: false,
+            protocolTimeout: 60000,
             args: [
                 "--disable-dev-shm-usage",           // Evita uso intensivo de /dev/shm
                 "--disable-gpu",                     // Desactiva GPU (no necesaria en server)
